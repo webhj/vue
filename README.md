@@ -1,3 +1,3 @@
 # vue
-##Vue2 购物车价格计算演示 
-![vue2]:(https://webhj.github.io/vue/img/price.gif)
+## 购物车价格计算演示<br>
+![vue2](https://github.com/webhj/vue/blob/master/img/price.gif)
