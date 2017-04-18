@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="author" content="794520386@qq.com">
+    <title>Vue2购物车计价 Demo</title>
+    <link rel="shortcut icon" type="image/ico" href="http://www.webhj.com/favicon.ico">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <script src="js/vue.min.js"></script>
+    <style>
+        .mbt15{ margin:15px 0;}
+        .wran{ color:red; font-weight:bold; }
+        .disabled{ cursor:not-allowed }
+        .btn-danger{ margin-left:20px; }
+        .container{ max-width:640px;}
+    </style>
+</head>
+<body>
+<div id="card" class="container">
+
+    <button @click="addItem" class="btn btn-success mbt15">新增</button>
+    <ul class="list-group">
+        <li v-for="(item,index) in items" class="list-group-item">
+
+            <button @click="deleteItem(index)" class="btn btn-danger btn-xs pull-right">X</button>
+            <span class="badge">{{item.price | rmb}}</span>
+            <button @click="cut(index)" :disabled="item.isCutDis" :class="{disabled:item.isCutDis}"
+                    class="btn btn-default btn-sm">-
+            </button>
+            <span :class="{wran:item.isWarn}">{{item.quantity}}</span>
+            <button @click="add(index)" class="btn btn-default btn-sm">+</button>
+            {{item.text}}
+        </li>
+    </ul>
+    <p v-show="isShow">总价：<span>{{totalPrice | rmb}}</span> 记录：{{dinosUpdated}}</p>
+    <p v-show="isShow">类别数：<span>{{totalSpecies}}</span> 记录：{{speciesUpdated}}</p>
+</div>
+<script>
+    function numRange(min, max) {
+        return Math.round(Math.random() * (max - min) + min)
+    }
+    var app = new Vue({
+        el: '#card',
+        data: {
+            isShow: true,
+            dinosUpdated: 0,
+            speciesUpdated: 0,
+            num: 3,
+            items: [
+                {text: '物品1', quantity: 1, price: 112, isCutDis: false, isWarn: false},
+                {text: '物品2', quantity: 1, price: 312, isCutDis: false, isWarn: false},
+                {text: '物品3', quantity: 1, price: 42, isCutDis: false, isWarn: false}
+            ]
+        },
+        computed: {
+            totalPrice: function () {
+                this.dinosUpdated += 1
+                var sum = 0;
+                var items = this.items;
+                for (var i in items) {
+                    sum += items[i].quantity * items[i].price
+                }
+                return sum;
+            },
+            totalSpecies: function () {
+                this.speciesUpdated += 1;
+                if(this.items.length<=0){
+                    this.isShow=false
+                }
+                return this.items.length
+            }
+        },
+        methods: {
+            addItem: function () {
+                this.num += 1;
+                this.items.push({
+                    text: '物品' + this.num,
+                    quantity: numRange(0, 3),
+                    price: numRange(110, 200),
+                    isCutDis: false,
+                    isWarn: false
+                });
+                if(this.items.length>0){
+                    this.isShow=true
+                }
+            },
+            deleteItem: function (index) {
+                this.items.splice(index, 1)
+            },
+            add: function (index) {
+                this.items[index].quantity += 1;
+                if (this.items[index].quantity >= 10) {
+                    this.items[index].isWarn = true
+                } else {
+                    this.items[index].isWarn = false
+                }
+                this.items[index].isCutDis = false
+            },
+            cut: function (index) {
+                this.items[index].quantity -= 1;
+                if (this.items[index].quantity < 10) {
+                    this.items[index].isWarn = false
+                }
+                if (this.items[index].quantity <= 0) {
+                    this.items[index].quantity = 0
+                    this.items[index].isCutDis = true
+                } else {
+                    this.items[index].isCutDis = false
+                }
+            }
+
+        },
+        filters: {
+            rmb: function (value) {
+                if (!value) {
+                    return ''
+                }
+                return '¥' + value
+            }
+        }
+    })
+</script>
+</body>
+</html>
